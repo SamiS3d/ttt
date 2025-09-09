@@ -2700,3 +2700,51 @@ section,
   color: color-mix(in srgb, var(--default-color), transparent 60%);
   font-size: 14px;
 }
+/* ===== Mobile Menu Fix ===== */
+@media (max-width: 991px) {
+  body.mobile-nav-active #navmenu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6); /* الخلفية السوداء */
+    z-index: 9997;
+  }
+
+  body.mobile-nav-active #navmenu ul {
+    display: block;
+    position: absolute;
+    top: 60px; /* تحت الهيدر */
+    right: 15px;
+    left: 15px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    z-index: 9998;
+  }
+
+  #navmenu ul {
+    display: none; /* مخفية افتراضياً */
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+/* Dropdown بالموبايل */
+#navmenu .dropdown ul {
+  display: none;
+  list-style: none;
+  padding: 10px 15px;
+  margin: 0;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+#navmenu .dropdown ul li a {
+  padding: 8px 0;
+  display: block;
+}
+
+#navmenu .dropdown ul.dropdown-active {
+  display: block;
+}
