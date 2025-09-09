@@ -8,6 +8,7 @@
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
   <link href="assets/css/main.css" rel="stylesheet">
 
   <style>
@@ -23,8 +24,6 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 25px;
-      flex-wrap: wrap;
-      gap: 10px;
     }
     .filter-bar h5 {
       margin: 0;
@@ -95,8 +94,12 @@
     <!-- Filter Bar -->
     <div class="filter-bar">
       <h5><i class="bi bi-funnel-fill"></i> Filter Products</h5>
-      <div class="d-flex flex-wrap align-items-center gap-2">
-        <input type="text" id="searchBox" class="form-control d-inline-block w-auto me-2" placeholder="Search...">
+
+      <div>
+        <!-- Search -->
+        <input type="text" id="searchInput" class="form-control d-inline-block w-auto me-2" placeholder="Search...">
+      
+        <!-- Category -->
         <select id="filterCategory" class="form-select d-inline-block w-auto me-2">
           <option value="">All</option>
           <option value="Electronics">Electronics</option>
@@ -106,16 +109,24 @@
           <option value="Books">Books</option>
           <option value="Home">Home</option>
         </select>
+      
+        <!-- Min/Max -->
         <input type="number" id="filterMinPrice" class="form-control d-inline-block w-auto me-2" placeholder="Min">
         <input type="number" id="filterMaxPrice" class="form-control d-inline-block w-auto me-2" placeholder="Max">
-        <select id="sortProducts" class="form-select d-inline-block w-auto me-2">
+      
+        <!-- Sort -->
+        <select id="sortBy" class="form-select d-inline-block w-auto me-2">
           <option value="">Sort By</option>
-          <option value="low-high">Price: Low to High</option>
-          <option value="high-low">Price: High to Low</option>
+          <option value="priceAsc">Price: Low to High</option>
+          <option value="priceDesc">Price: High to Low</option>
+          <option value="nameAsc">Name: A → Z</option>
+          <option value="nameDesc">Name: Z → A</option>
         </select>
+      
+        <!-- Button -->
         <button id="applyFilters" class="btn btn-primary"><i class="bi bi-search"></i></button>
       </div>
-    </div>
+          </div>
 
     <!-- Products -->
     <div class="row g-4" id="swap-products"></div>
@@ -158,37 +169,34 @@
 
   <!-- Scripts -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/js/products.js"></script>
   <script src="assets/js/ForAll.js"></script>
   <script src="assets/js/cart.js"></script>
+  <script src="assets/js/products.js"></script>
   <script>
     const productsPerPage = 9;
     let currentPage = 1;
-    let filteredProducts = allProducts;
+    let filteredProducts = shuffleArray(allProducts); // أول مرة راندوم
     let selectedProduct = null;
-
-    // مؤقت: أصحاب المنتجات
+  
+    // مؤقت: أسماء البائعين
     const sellers = ["Ahmad", "Sara", "Khaled", "Lina", "Omar", "Jana", "Yousef", "Mona", "Sami", "Nour", "Rami", "Aya"];
-
-    // Shuffle array
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
+  
+    // دالة Shuffle
+    function shuffleArray(arr) {
+      return arr
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
     }
-    allProducts = shuffle(allProducts);
-    filteredProducts = allProducts;
-
+  
     function renderProducts() {
       const start = (currentPage - 1) * productsPerPage;
       const end = start + productsPerPage;
       const productsToShow = filteredProducts.slice(start, end);
-
+  
       const container = document.getElementById("swap-products");
       container.innerHTML = "";
-
+  
       productsToShow.forEach((prod, index) => {
         const seller = sellers[(start + index) % sellers.length];
         const div = document.createElement("div");
@@ -210,15 +218,15 @@
         `;
         container.appendChild(div);
       });
-
+  
       renderPagination();
     }
-
+  
     function renderPagination() {
       const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
       const pagination = document.getElementById("pagination");
       pagination.innerHTML = "";
-
+  
       for (let i = 1; i <= totalPages; i++) {
         pagination.innerHTML += `
           <li class="page-item ${i === currentPage ? "active" : ""}">
@@ -226,7 +234,7 @@
           </li>
         `;
       }
-
+  
       pagination.querySelectorAll(".page-link").forEach((btn, i) => {
         btn.addEventListener("click", e => {
           e.preventDefault();
@@ -235,36 +243,41 @@
         });
       });
     }
-
-    // تطبيق الفلاتر
+  
+    // الفلترة
     document.getElementById("applyFilters").addEventListener("click", () => {
-      const search = document.getElementById("searchBox").value.toLowerCase();
-      const category = document.getElementById("filterCategory").value;
-      const minPrice = parseFloat(document.getElementById("filterMinPrice").value) || 0;
-      const maxPrice = parseFloat(document.getElementById("filterMaxPrice").value) || Infinity;
+  const category = document.getElementById("filterCategory").value;
+  const minPrice = parseFloat(document.getElementById("filterMinPrice").value) || 0;
+  const maxPrice = parseFloat(document.getElementById("filterMaxPrice").value) || Infinity;
+  const searchText = document.getElementById("searchInput").value.toLowerCase();
+  const sortBy = document.getElementById("sortBy").value;
 
-      filteredProducts = allProducts.filter(p =>
-        (!search || p.title.toLowerCase().includes(search)) &&
-        (!category || p.category === category) &&
-        p.price >= minPrice &&
-        p.price <= maxPrice
-      );
-      currentPage = 1;
-      renderProducts();
-    });
+  // فلترة
+  filteredProducts = allProducts.filter(p =>
+    (!category || p.category === category) &&
+    p.price >= minPrice &&
+    p.price <= maxPrice &&
+    p.title.toLowerCase().includes(searchText)
+  );
 
-    // تطبيق الترتيب (Sort)
-    document.getElementById("sortProducts").addEventListener("change", (e) => {
-      const val = e.target.value;
-      if (val === "low-high") {
-        filteredProducts.sort((a, b) => a.price - b.price);
-      } else if (val === "high-low") {
-        filteredProducts.sort((a, b) => b.price - a.price);
-      }
-      currentPage = 1;
-      renderProducts();
-    });
+  // ترتيب (Sort)
+  if (sortBy === "priceAsc") {
+    filteredProducts.sort((a, b) => a.price - b.price);
+  } else if (sortBy === "priceDesc") {
+    filteredProducts.sort((a, b) => b.price - a.price);
+  } else if (sortBy === "nameAsc") {
+    filteredProducts.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortBy === "nameDesc") {
+    filteredProducts.sort((a, b) => b.title.localeCompare(a.title));
+  } else {
+    // إذا ما في sort → راندوم
+    filteredProducts = shuffleArray(filteredProducts);
+  }
 
+  currentPage = 1;
+  renderProducts();
+});
+  
     document.addEventListener("click", e => {
       if (e.target.closest(".swap-btn")) {
         const idx = e.target.closest(".swap-btn").dataset.index;
@@ -272,18 +285,18 @@
         document.getElementById("swapItemName").textContent = "Swap with: " + selectedProduct.title;
       }
     });
-
+  
     document.getElementById("confirmSwap").addEventListener("click", () => {
       const name = document.getElementById("userItemName").value || "Unnamed Item";
       const details = document.getElementById("userItemDetails").value || "No details provided";
       const note = document.getElementById("userItemNote").value || "";
       const fileInput = document.getElementById("userItemImage");
-
+  
       let userImg = "https://images.pexels.com/photos/207983/pexels-photo-207983.jpeg";
       if (fileInput.files && fileInput.files[0]) {
         userImg = URL.createObjectURL(fileInput.files[0]);
       }
-
+  
       if (selectedProduct) {
         cartItemsData.push({
           title: `${selectedProduct.title} (Swap with ${name})`,
@@ -295,16 +308,17 @@
         });
         renderMiniCart();
       }
-
+  
       document.getElementById("userItemName").value = "";
       document.getElementById("userItemDetails").value = "";
       document.getElementById("userItemNote").value = "";
       fileInput.value = "";
-
+  
       bootstrap.Modal.getInstance(document.getElementById("swapModal")).hide();
     });
-
+  
     renderProducts();
   </script>
+  
 </body>
 </html>
