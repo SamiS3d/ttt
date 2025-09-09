@@ -382,7 +382,7 @@ h6 {
 .main-nav {
   background-color: #fff; /* أبيض ثابت */
   border-top: 1px solid rgba(0,0,0,0.05);
-  padding: 10px 20px;
+  padding: 0;
 }
 
 .header .btn-getstarted,

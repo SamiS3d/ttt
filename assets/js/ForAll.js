@@ -4,9 +4,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const headerHTML = `
     <header id="header" class="header sticky-top">
       <div class="topbar container-fluid d-flex justify-content-between align-items-center">
-        <div class="lang-switch">
-          <a href="#" class="lang">AR</a> | <a href="#" class="lang">EN</a>
-        </div>
+<div class="lang-switch d-none d-xl-block">
+  <a href="#" class="lang">AR</a> | <a href="#" class="lang">EN</a>
+</div>
+
+<div class="menu-toggle d-xl-none">
+  <i class="bi bi-list mobile-nav-toggle"></i>
+</div>
+
         <div class="logo text-center">
           <a href="index.html"><h1 class="sitename">badilne</h1></a>
         </div>
@@ -31,22 +36,21 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
       </div>
 
-      <div class="main-nav container-fluid d-flex align-items-center">
-        <nav id="navmenu" class="navmenu mx-auto">
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="swap.html">Swap</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li class="dropdown">
-              <a href="about.html"><span>About</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-              <ul>
-                <li><a href="team.html">Team</a></li>
-              </ul>
-            </li>
-          </ul>
-          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-        </nav>
-      </div>
+<div class="main-nav container-fluid d-flex align-items-center">
+  <nav id="navmenu" class="navmenu mx-auto">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="swap.html">Swap</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li class="dropdown">
+        <a href="about.html"><span>About</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+        <ul>
+          <li><a href="team.html">Team</a></li>
+        </ul>
+      </li>
+    </ul>
+</div>
+
     </header>
   `;
 
